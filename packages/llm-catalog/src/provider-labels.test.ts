@@ -21,6 +21,15 @@ describe('PROVIDER_LABELS', () => {
     expect(PROVIDER_LABELS.bedrock).toBe('Amazon Bedrock');
   });
 
+  // Same failure mode as Bedrock's, pre-empted: `aimlapi` is the models.dev
+  // provider id, and without an entry here the picker would label the whole
+  // group "Kortix". The provider's own product name is the domain — not
+  // "AI/ML API", not "AIMLAPI" — so the label is pinned rather than left to
+  // whatever the catalog's free-text `name` happens to say.
+  test('labels aimlapi with its product name, the domain', () => {
+    expect(PROVIDER_LABELS.aimlapi).toBe('aimlapi.com');
+  });
+
   // The map is deliberately CURATED, not exhaustive over models.dev's ~100+
   // providers — unknown long-tail ids fall back to the model's providerName by
   // design. But every id the picker itself promotes must resolve, or that

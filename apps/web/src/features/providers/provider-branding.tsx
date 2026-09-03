@@ -36,6 +36,9 @@ export const PROVIDER_NOTES: Record<string, string> = {
 };
 
 const PROVIDER_ICON_MAP: Record<string, { src?: string; fallback: string }> = {
+  // aimlapi.com — the mark is monochrome `currentColor`, so it inherits the row
+  // text color in both themes like the other single-path marks here.
+  aimlapi: { src: '/provider-icons/aimlapi.svg', fallback: 'AI' },
   anthropic: { src: '/provider-icons/anthropic.svg', fallback: 'AN' },
   openai: { src: '/provider-icons/openai.svg', fallback: 'OA' },
   codex: { src: '/provider-icons/openai.svg', fallback: 'GPT' },

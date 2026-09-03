@@ -910,6 +910,16 @@ export const MODEL_SELECTOR_PROVIDER_IDS = [
 ] as const;
 
 export const PROVIDER_LABELS: Record<string, string> = {
+  // AI/ML API is an OpenAI-compatible aggregator; its own product name is the
+  // domain, `aimlapi.com`, which is what its console, docs and dashboard call
+  // it — so that is what the picker must say. Present here ahead of the
+  // catalog entry on purpose: the moment models.dev publishes the provider,
+  // the gateway starts stamping `aimlapi` onto `GatewayModel.provider`, and a
+  // MISSING label does not degrade gracefully — the lookup falls through to
+  // `FlatModel.providerName`, which is always "Kortix" under the gateway (the
+  // exact defect the Bedrock entry below documents). Costs nothing until the
+  // provider exists; prevents a mislabeled group the day it does.
+  aimlapi: 'aimlapi.com',
   anthropic: 'Anthropic',
   openai: 'OpenAI',
   codex: 'ChatGPT',
