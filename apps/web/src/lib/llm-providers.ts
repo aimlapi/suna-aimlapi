@@ -169,6 +169,8 @@ const BAKED_SEED = catalog as RawCatalog;
  * this list is still browsable below, sorted A-Z.
  */
 const FEATURED_IDS = new Set([
+  // FORK-ONLY placement. See the commit that introduced this line.
+  'aimlapi',
   'anthropic',
   'openai',
   'google',

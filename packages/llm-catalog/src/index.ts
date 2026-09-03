@@ -899,6 +899,8 @@ export function catalogModelForWireModel(
 }
 
 export const MODEL_SELECTOR_PROVIDER_IDS = [
+  // FORK-ONLY placement. See the commit that introduced this line.
+  'aimlapi',
   'kortix',
   'opencode',
   'anthropic',
