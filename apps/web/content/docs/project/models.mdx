@@ -46,6 +46,66 @@ A model id has one of three shapes:
 Connect a BYOK key on the project's Model settings page, or set the
 provider's env var directly as a [secret](/docs/project/secrets).
 
+## Where the BYOK provider list comes from
+
+Nothing in this repo hand-maintains the list of providers you can connect. The
+API refreshes it hourly from [models.dev](https://models.dev)'s `api.json`
+(`LLM_GATEWAY_CATALOG_URL`), and every screen — the connect modal, the model
+picker, `kortix providers ls` — reads that one catalog. A provider's base URL
+comes from its `api` field, the key it asks you for from `env[0]`, and its
+transport from `npm`: anything that is not Anthropic, Bedrock or Google is
+routed as OpenAI-compatible, so a provider models.dev adds tomorrow is
+connectable with no change here.
+
+The practical consequence is that a provider Kortix does not offer is almost
+never a Kortix limitation — it is a provider models.dev does not publish yet.
+Two supported ways around that, in the meantime:
+
+**Per project — the Custom provider tab.** Customize → Gateway → Custom takes a
+provider id, a display name, a base URL, a key and one model id. It stores the
+key as the project secret `CUSTOM_<ID>_API_KEY` and gives you a snippet for your
+repo's OpenCode config (`config_dir`, `.kortix/opencode/opencode.jsonc` by
+default), where the provider itself lives. For
+[aimlapi.com](https://aimlapi.com), an OpenAI-compatible aggregator whose base
+URL is `https://api.aimlapi.com/v1`, the form produces:
+
+```jsonc
+{
+  "provider": {
+    "aimlapi": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "aimlapi.com",
+      "options": {
+        "baseURL": "https://api.aimlapi.com/v1",
+        "apiKey": "{env:CUSTOM_AIMLAPI_API_KEY}"
+      },
+      "models": {
+        "openai/gpt-4o-mini": {
+          "id": "openai/gpt-4o-mini",
+          "name": "GPT-4o mini",
+          "family": "aimlapi"
+        }
+      }
+    }
+  }
+}
+```
+
+Add one entry under `models` per model you want in the picker. This is an
+OpenCode-native provider, so it works with the gateway flag off; with the
+gateway on, sessions are pinned to the `kortix` provider and a custom provider
+is not routed.
+
+**Per deployment — your own catalog.** A self-host operator can point
+`LLM_GATEWAY_CATALOG_URL` at any URL serving the models.dev `api.json` shape.
+An extra top-level provider object there (`id`, `name`, `env`, `api`, `npm`,
+`models`) is resolved exactly like an upstream one — no fork, no allowlist
+entry. A failed or malformed fetch keeps the last good catalog rather than
+replacing it, so a bad file degrades to stale, never to empty.
+
+Both are workarounds. The durable fix for a missing provider is a models.dev
+entry, which reaches every Kortix deployment on the next hourly refresh.
+
 ## Thinking effort
 
 The composer's thinking control sets the session's model **variant** in both

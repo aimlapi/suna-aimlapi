@@ -1,3 +1,6 @@
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
+
 import { describe, expect, test } from 'bun:test';
 
 import { providerIconSrc } from './provider-branding';
@@ -31,6 +34,15 @@ describe('providerIconSrc', () => {
   test('keeps legacy short aliases working', () => {
     expect(providerIconSrc('bedrock')).toBe('/provider-icons/amazon-bedrock.svg');
     expect(providerIconSrc('fireworks')).toBe('/provider-icons/fireworks-ai.svg');
+  });
+
+  // The moonshotai-cn regression above was a map pointing at a file that did
+  // not exist, which only shows up as a broken image in a browser. Assert the
+  // asset on disk for the mark added with this change so it cannot repeat.
+  test('resolves aimlapi to an asset that actually exists', () => {
+    const src = providerIconSrc('aimlapi');
+    expect(src).toBe('/provider-icons/aimlapi.svg');
+    expect(existsSync(join(import.meta.dir, '../../../public', String(src)))).toBe(true);
   });
 
   test('returns undefined for an unmapped id (caller falls back to initials)', () => {
